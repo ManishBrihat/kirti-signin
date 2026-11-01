@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Vv7XWhgXerYxVpn2griWxdQDJogdlvJdYdn85tPGutU='; style-src 'sha256-rw1L3D5D0cNWdtTQIGetZ+92W1PTGocOXxWHKBJSx60='; base-uri 'none'; form-action 'none'">
+<title>Brihat Kirti sign-in</title>
+<style>body{font-family:system-ui,sans-serif;max-width:40rem;margin:3rem auto;padding:0 1rem;color:#1a1a1a;background:#fff}textarea{width:100%;height:7rem;font:0.85rem ui-monospace,monospace}button{margin-top:.5rem;padding:.5rem 1rem}</style>
+</head>
+<body>
+<h1>Brihat Kirti</h1>
+<p id="msg">Finishing sign-in…</p>
+<div id="manual" hidden>
+<label for="addr">The address to paste into Kirti</label>
+<textarea id="addr" readonly></textarea>
+<button id="copy" type="button">Copy</button>
+</div>
+<script>(function () {
+  var q = location.search;
+  var p = new URLSearchParams(q);
+  var m = /^k1\.(\d{4,5})\.[A-Za-z0-9_-]{16,}$/.exec(p.get("state") || "");
+  var msg = document.getElementById("msg");
+  var box = document.getElementById("addr");
+  box.value = location.href;
+  document.getElementById("copy").addEventListener("click", function () {
+    box.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(box.value);
+  });
+  if (p.get("error")) { msg.textContent = "The sign-in was cancelled or refused. You can close this tab."; return; }
+  if (!p.get("code")) { msg.textContent = "This is the sign-in return page of Brihat Kirti. It does nothing on its own."; return; }
+  document.getElementById("manual").hidden = false;
+  var port = m ? Number(m[1]) : 0;
+  if (port >= 1024 && port <= 65535) {
+    msg.textContent = "Returning you to Kirti on this computer. If nothing happens, copy the address below and paste it into Kirti.";
+    setTimeout(function () { location.assign("http://127.0.0.1:" + port + "/callback" + q); }, 400);
+  } else {
+    msg.textContent = "Copy the address below and paste it into Kirti (Connections, Paste the address).";
+  }
+})();</script>
+</body>
+</html>
